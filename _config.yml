@@ -2,6 +2,7 @@
 title: Coolbet Tech | Coolbet Dev & Engineering Blog
 description: "Coolbet Dev & Engineering Blog."
 url: "https://coolbet.github.io/"
+baseurl: "https://coolbet.github.io"
 author:
   name: "Coolbet Dev"
   email: "tes@coolbet.com"
