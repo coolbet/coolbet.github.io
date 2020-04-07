@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en-GB"><generator uri="https://jekyllrb.com/" version="3.8.6">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" hreflang="en-GB" /><updated>2020-04-07T15:34:24+03:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">Coolbet.Tech</title><subtitle>Tech Blog from Coolbet Tech team</subtitle><author><name>Coolbet</name></author><entry><title type="html">Harbor and DefectDojo - Here comes Hardojo</title><link href="http://localhost:4000/security/auditing/docker/2020/04/03/Hardojo/" rel="alternate" type="text/html" title="Harbor and DefectDojo - Here comes Hardojo" /><published>2020-04-03T00:00:00+03:00</published><updated>2020-04-03T00:00:00+03:00</updated><id>http://localhost:4000/security/auditing/docker/2020/04/03/Hardojo</id><content type="html" xml:base="http://localhost:4000/security/auditing/docker/2020/04/03/Hardojo/">&lt;h3 id=&quot;hardojo&quot;&gt;Hardojo&lt;/h3&gt;
+
+&lt;p&gt;Hardojo is a small new piece of code that is in the works, and for which you can find the code on
+our &lt;a href=&quot;https://github.com/coolbet/Hardojo&quot;&gt;Github&lt;/a&gt; page.&lt;/p&gt;
+
+&lt;h4 id=&quot;what&quot;&gt;What&lt;/h4&gt;
+
+&lt;p&gt;A good Information Security practice would include managing and tracking Vulnerabilities as they
+come and, especially, as they go. &lt;a href=&quot;https://github.com/DefectDojo/django-DefectDojo&quot;&gt;DefectDojo&lt;/a&gt; is
+an OWASP Flagship Product that allows to &lt;code class=&quot;highlighter-rouge&quot;&gt;manage your application security program, maintain product and application information, schedule scans, triage vulnerabilities and push findings into defect trackers&lt;/code&gt;.
+In order to have a good overview of own vulnerabilities, data from all the different parts of a system
+needs to be ingested into Dojo.&lt;/p&gt;
+
+&lt;p&gt;Docker Images are built, created and updated daily. Moreover, every system which runs on
+microservices has probably hundreds -if not thousands- of them. This makes tracking changes manually
+extremely cost-inefficient, tedious and sometimes straight-up impossible.
+Luckily for us, Cloud-Native tools such as &lt;a href=&quot;https://github.com/goharbor/harbor&quot;&gt;Harbor&lt;/a&gt; can help
+with this by bundling together a container vulnerability scanner (such as &lt;a href=&quot;https://github.com/quay/clair&quot;&gt;Clair&lt;/a&gt;) together
+with a very fancy image registry.
+Using Harbor it is possible to force a vulnerability scan as soon as an image is pushed, giving us
+the possibility to have always the latest status of all the vulnerabilities that exist in our
+images.&lt;/p&gt;
+
+&lt;h4 id=&quot;the-problem&quot;&gt;The Problem&lt;/h4&gt;
+
+&lt;p&gt;The problem encountered when we tried to put together these two pieces of a puzzle is that in Harbor
+every image is completely independent, so it is hard to track which vulnerability gets solved over
+time, how vulnerabilities relate to each other and how image inheritace spreads vulnerabilities
+around. Moreover, the volume of the images and the frequency of changes makes it impossible to
+manually keep track of the vulnerabilities.&lt;/p&gt;
+
+&lt;p&gt;In order to properly manage container images vulnerabilities we wanted:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;To have all data in Dojo&lt;/li&gt;
+  &lt;li&gt;To have always fresh information&lt;/li&gt;
+  &lt;li&gt;Not to do any manual work in the process&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h4 id=&quot;here-comes-hardojo&quot;&gt;Here comes Hardojo&lt;/h4&gt;
+
+&lt;p&gt;The problem is simple, and so is the solution. Hardojo is nothing more than a Webhook consumer for
+Harbor and an API client for Dojo.&lt;/p&gt;
+
+&lt;p&gt;Hardojo will wait for Harbor to send a ‘scanCompleted’ webhook, and once this is received, will
+query the scan result for the relevant image back to Harbor. Once the data is collected, will
+organize it and push it to Dojo.&lt;/p&gt;
+
+&lt;p&gt;By ‘organize’ it is meant a bundle of actions:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;If the new &lt;code class=&quot;highlighter-rouge&quot;&gt;image:tag&lt;/code&gt; has never been seen before, it creates a new &lt;strong&gt;Endpoint&lt;/strong&gt; in Dojo, otherwise, gets
+the ID for the endpoint that corresponds to that image. This allows to better track the images in
+the registry and to logically group together scans for the same image.&lt;/li&gt;
+  &lt;li&gt;Create a new &lt;strong&gt;Engagement&lt;/strong&gt; for the endpoint-image. An engagement in dojo is one or more tests
+performed in the same context.&lt;/li&gt;
+  &lt;li&gt;Create a new &lt;strong&gt;Test&lt;/strong&gt; within that engagement. A test can be intended as an action which produced a
+set of findings.&lt;/li&gt;
+  &lt;li&gt;Finally, create a new &lt;strong&gt;Finding&lt;/strong&gt; for every vulnerability that was collected and push them all to
+Dojo.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h4 id=&quot;technical-details&quot;&gt;Technical Details&lt;/h4&gt;
+
+&lt;p&gt;Hardojo is written in GO and can be run as a standalone binary. A Dockerfile and a docker-compose
+manifest is also available. Running it within Kubernetes should be also trivial. For more
+information, check the &lt;a href=&quot;https://github.com/coolbet/Hardojo&quot;&gt;README&lt;/a&gt; file in the repository.&lt;/p&gt;</content><author><name>Coolbet</name></author><summary type="html">Hardojo Hardojo is a small new piece of code that is in the works, and for which you can find the code on our Github page. What A good Information Security practice would include managing and tracking Vulnerabilities as they come and, especially, as they go. DefectDojo is an OWASP Flagship Product that allows to manage your application security program, maintain product and application information, schedule scans, triage vulnerabilities and push findings into defect trackers. In order to have a good overview of own vulnerabilities, data from all the different parts of a system needs to be ingested into Dojo. Docker Images are built, created and updated daily. Moreover, every system which runs on microservices has probably hundreds -if not thousands- of them. This makes tracking changes manually extremely cost-inefficient, tedious and sometimes straight-up impossible. Luckily for us, Cloud-Native tools such as Harbor can help with this by bundling together a container vulnerability scanner (such as Clair) together with a very fancy image registry. Using Harbor it is possible to force a vulnerability scan as soon as an image is pushed, giving us the possibility to have always the latest status of all the vulnerabilities that exist in our images. The Problem The problem encountered when we tried to put together these two pieces of a puzzle is that in Harbor every image is completely independent, so it is hard to track which vulnerability gets solved over time, how vulnerabilities relate to each other and how image inheritace spreads vulnerabilities around. Moreover, the volume of the images and the frequency of changes makes it impossible to manually keep track of the vulnerabilities. In order to properly manage container images vulnerabilities we wanted: To have all data in Dojo To have always fresh information Not to do any manual work in the process Here comes Hardojo The problem is simple, and so is the solution. Hardojo is nothing more than a Webhook consumer for Harbor and an API client for Dojo. Hardojo will wait for Harbor to send a ‘scanCompleted’ webhook, and once this is received, will query the scan result for the relevant image back to Harbor. Once the data is collected, will organize it and push it to Dojo. By ‘organize’ it is meant a bundle of actions: If the new image:tag has never been seen before, it creates a new Endpoint in Dojo, otherwise, gets the ID for the endpoint that corresponds to that image. This allows to better track the images in the registry and to logically group together scans for the same image. Create a new Engagement for the endpoint-image. An engagement in dojo is one or more tests performed in the same context. Create a new Test within that engagement. A test can be intended as an action which produced a set of findings. Finally, create a new Finding for every vulnerability that was collected and push them all to Dojo. Technical Details Hardojo is written in GO and can be run as a standalone binary. A Dockerfile and a docker-compose manifest is also available. Running it within Kubernetes should be also trivial. For more information, check the README file in the repository.</summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="http://localhost:4000/assets/default-social-image.png" /><media:content medium="image" url="http://localhost:4000/assets/default-social-image.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry></feed>

@@ -1,72 +1,50 @@
 <!DOCTYPE html>
-<html>
+<html lang="{{ site.lang | default: "en-US" }}">
 
-{% include head.html %}
+  <head>
+    <!-- General meta -->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
 
-<body>
-	<div id="wrap">
-	  	
-	  	<!-- Navigation -->
-	  	{% include menu.html %}
-    
-    <!-- Icon menu -->
-	  <a {% if site.reverse == true %}id="nav-menu-left"{% else %}id="nav-menu"{% endif %}>
-	  	<div id="menu"></div>
-	  </a>
+    {% if page.indexing == false %}
+      <meta name="robots" content="noindex">
+    {% endif %}
 
-      <!-- Header -->
-      {% if site.custom_header == true %}
-        {% include header-custom.html %}
-      {% else %}
-        {% include header.html %}
-      {% endif %}
+    {% if page.collectionpage %}
+      {% seo title=false %}
 
-    <!-- Main content -->
-	  <div id="container">
-		  
-		<main>
+      {% assign collectiondata = site.collections | where: "label", page.collectionpage | first %}
+      <title>{{ collectiondata.title }} - {{ site.title }}</title>
+      <meta property="og:title" content="{{ collectiondata.title }}">
+      <meta name="description" content="{{ collectiondata.description }}">
+      <meta property="og:description" content="{{ collectiondata.description }}">
+    {% else %}
+      {% seo %}
+    {% endif %}
 
-			{{ content }}
+    <link rel="manifest" href="{{ "/manifest.json" | relative_url }}">
+    <meta name="theme-color" content="{{ site.manifest.theme_color | default: '#242e2b' }}"/>
 
-	  </main>
-		
-		  <!-- Pagination links -->
-      {% if paginator.total_pages > 1 %}
-        <div class="pagination">
-          {% if paginator.previous_page == 1 %}
-            <a href="{{ '/' | prepend: site.baseurl | replace: '//', '/' }}" class="page-item">&laquo;</a>
-          {% elsif paginator.previous_page%}
-            <a href="{{ paginator.previous_page_path | prepend: site.baseurl | replace: '//', '/' }}" class="page-item">&laquo;</a>
-          {% else %}
-            <span class="page-item">&laquo;</span>
-          {% endif %}
-        
-          {% for page in (1..paginator.total_pages) %}
-            {% if page == paginator.page %}
-              <span class="page-item">{{ page }}</span>
-            {% elsif page == 1 %}
-              <a href="{{ '/' | prepend: site.baseurl | replace: '//', '/' }}" class="page-item">{{ page }}</a>
-            {% else %}
-              <a href="{{ site.paginate_path | prepend: site.baseurl | replace: '//', '/' | replace: ':num', page }}" class="page-item">{{ page }}</a>
-            {% endif %}
-          {% endfor %}
-        
-          {% if paginator.next_page %}
-            <a href="{{ paginator.next_page_path | prepend: site.baseurl | replace: '//', '/' }}" class="page-item">&raquo;</a>
-          {% else %}
-            <span class="page-item">&raquo;</span>
-          {% endif %}
-        </div>
-        {% endif %}
+    {% if site.css_inline == true %}
+      {% include site-styles.html %}
+    {% else %}
+      <link rel="stylesheet" href="{{ "/assets/styles.css" | relative_url }}">
+    {% endif %}
 
-	  </div>
-	    
-	    <!-- Footer -->
-	    {% include footer.html %}
+    {% if site.favicons or site.avatarurl %}{% include site-favicons.html %}{% endif %}
 
-	    <!-- Script -->
-      {% include script.html %}
+    {% if site.google_analytics %}{% include site-analytics.html %}{% endif %}
 
-	</div>
-</body>
+    {% include site-before-start.html %}
+  </head>
+
+  <body class="layout-{{ page.layout }}{% if page.title %}  {{ page.title | slugify }}{% endif %}">
+    {% include site-icons.svg %}
+
+    {{ content }}
+
+    {% if site.service_worker != false %}{% include site-sw.html %}{% endif %}
+
+    {% include site-before-end.html %}
+  </body>
+
 </html>
